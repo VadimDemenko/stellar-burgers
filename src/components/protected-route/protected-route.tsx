@@ -1,6 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from '../../services/store';
-import { checkUserAuth } from '../../services/slices/user/user';
+import {
+  checkUserAuth,
+  getUserLoadingStatus
+} from '../../services/slices/user/user';
+import { Preloader } from '@ui';
 
 type TProtectedRouteProps = {
   onlyAuthUser?: boolean;
@@ -13,6 +17,13 @@ export const ProtectedRoute = ({
 }: TProtectedRouteProps) => {
   const location = useLocation();
   const isAithChecked = useSelector(checkUserAuth);
+  const loadingStatus = useSelector(getUserLoadingStatus);
+
+  const isLoading = loadingStatus.getUser === 'pending';
+
+  if (isLoading) {
+    return <Preloader />;
+  }
 
   if (!onlyAuthUser && !isAithChecked) {
     return <Navigate replace to='/login' state={{ from: location }} />;
